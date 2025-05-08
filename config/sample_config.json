@@ -1,0 +1,49 @@
+{
+  "model": {
+    "size": "7B",
+    "custom_config": {
+      "hidden_size": 4096,
+      "num_layers": 32,
+      "num_heads": 32,
+      "intermediate_size": 16384,
+      "vocab_size": 32000,
+      "max_seq_length": 4096,
+      "head_dim": 128
+    }
+  },
+  "clusters": {
+    "gpu_cluster": "gpu_medium",
+    "cpu_cluster": "cpu_small"
+  },
+  "strategies": {
+    "roofline": null,
+    "analytical": {
+      "hardware_efficiency": 0.6,
+      "overhead": 0.00002
+    }
+  },
+  "workloads": {
+    "light_load": {
+      "type": "constant",
+      "batch_size": 1,
+      "input_length": 512,
+      "output_length": 64,
+      "num_requests": 50
+    },
+    "heavy_load": {
+      "type": "realistic",
+      "concurrent_users": 50,
+      "arrival_rate": 5,
+      "session_duration": 300,
+      "input_length_profile": {"short": 0.2, "medium": 0.6, "long": 0.2},
+      "output_length_profile": {"short": 0.3, "medium": 0.5, "long": 0.2},
+      "max_requests": 200,
+      "seed": 42
+    }
+  },
+  "output": {
+    "save_results": true,
+    "output_dir": "results",
+    "plot_charts": true
+  }
+} 
