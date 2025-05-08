@@ -66,13 +66,16 @@ class Model(ABC):
         
         total_time = 0.0
         for op in operators:
-            # 对每个算子计算执行时间并累加
+            # 仅传递必要的参数，避免与算子的dimensions字段重复
+            # 算子会自己从dimensions获取缺少的参数
             time = op.compute_time(
                 hardware=hardware,
                 strategy=strategy,
                 batch_size=batch_size,
                 seq_length=seq_length if phase == "prefill" else 1,  # decode阶段每次只处理一个token
-                **self.config
+                # 不再传递整个config **self.config
+                operation_type=self.config.get("operation_type", "fp16"),  # 只传递通用参数
+                parallelization_factor=self.config.get("parallelization_factor", 1.0)
             )
             total_time += time
         

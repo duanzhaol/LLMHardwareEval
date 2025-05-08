@@ -1,5 +1,5 @@
 # LLM硬件性能模拟器
-
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/duanzhaol/LLMHardwareEval)
 LLM硬件性能模拟器（LLMHardwareEval）是一个用于模拟和评估大型语言模型（LLM）在不同硬件环境下性能表现的工具。它可以模拟不同模型、硬件条件、并发度和请求长度下的性能指标，包括预填充（prefill）和解码（decode）的运行时间，从而估算吞吐量、首词延迟（TTFT）和每词延迟（TPOT）等指标。
 
 ## 功能特点
