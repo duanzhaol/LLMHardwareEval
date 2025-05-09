@@ -33,10 +33,21 @@ class LLMHardwareEval:
         self.config = self._load_config(config_path)
         
         # 创建模型
-        self.model = Factory.create_model(
-            self.config["model"]["size"],
-            self.config["model"].get("custom_config")
-        )
+        if "model" in self.config:
+            model_config = self.config["model"]
+            
+            # 获取模型名称和大小
+            if "name" in model_config and "size" in model_config:
+                self.model = Factory.create_model(
+                    model_config["name"],
+                    model_config["size"],
+                    model_config.get("custom_config")
+                )
+            else:
+                raise ValueError("模型配置必须包含'name'和'size'字段")
+        else:
+            # 默认模型
+            self.model = Factory.create_model("llama3", "8B")
         
         # 创建硬件集群
         self.clusters = {}
@@ -60,7 +71,8 @@ class LLMHardwareEval:
         """加载配置"""
         default_config = {
             "model": {
-                "size": "7B"
+                "name": "llama3",
+                "size": "8B"
             },
             "clusters": {
                 "gpu_small": "gpu_small",

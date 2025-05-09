@@ -63,43 +63,6 @@ DEFAULT_CPU_CONFIGS = {
     }
 }
 
-# 模型配置
-DEFAULT_MODEL_CONFIGS = {
-    "7B": {
-        "name": "LLM-7B",
-        "hidden_size": 4096,
-        "num_layers": 32,
-        "num_heads": 32,
-        "intermediate_size": 16384,  # 4 * hidden_size
-        "vocab_size": 32000,
-        "max_seq_length": 4096,
-        "head_dim": 128,  # hidden_size / num_heads
-        "parallelization_factor": 1.0
-    },
-    "13B": {
-        "name": "LLM-13B",
-        "hidden_size": 5120,
-        "num_layers": 40,
-        "num_heads": 40,
-        "intermediate_size": 20480,  # 4 * hidden_size
-        "vocab_size": 32000,
-        "max_seq_length": 4096,
-        "head_dim": 128,  # hidden_size / num_heads
-        "parallelization_factor": 1.0
-    },
-    "70B": {
-        "name": "LLM-70B",
-        "hidden_size": 8192,
-        "num_layers": 80,
-        "num_heads": 64,
-        "intermediate_size": 32768,  # 4 * hidden_size
-        "vocab_size": 32000,
-        "max_seq_length": 4096,
-        "head_dim": 128,  # hidden_size / num_heads
-        "parallelization_factor": 1.0
-    }
-}
-
 # 集群配置
 DEFAULT_CLUSTER_CONFIGS = {
     "gpu_small": {

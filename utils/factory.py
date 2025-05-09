@@ -6,6 +6,9 @@ from hardware.cpu import CPU
 
 from models.base import Model
 from models.transformer import TransformerModel
+from models.llama import LlamaModel
+from models.qwen import QwenModel
+from models.baichuan import BaichuanModel
 
 from cluster.base import Cluster
 from cluster.gpu import GPUCluster
@@ -20,11 +23,11 @@ from workloads.realistic import ConstantWorkload, RandomWorkload, DistributionWo
 from config.default import (
     DEFAULT_GPU_CONFIGS, 
     DEFAULT_CPU_CONFIGS, 
-    DEFAULT_MODEL_CONFIGS,
     DEFAULT_CLUSTER_CONFIGS,
     DEFAULT_STRATEGY_CONFIGS,
     DEFAULT_WORKLOAD_CONFIGS
 )
+from config.model_configs import MODEL_CONFIGS, get_model_config
 
 class Factory:
     """工厂类，用于创建各种组件实例"""
@@ -72,27 +75,48 @@ class Factory:
             raise ValueError(f"不支持的硬件类型: {hw_type}")
     
     @staticmethod
-    def create_model(model_size: str, config: Dict[str, Any] = None) -> Model:
+    def create_model(model_name: str, model_size: str, config: Dict[str, Any] = None) -> Model:
         """
         创建模型实例
         
         Args:
-            model_size: 模型大小，如"7B"、"13B"等
+            model_name: 模型名称，如"llama3"、"qwen"、"baichuan"等
+            model_size: 模型大小，如"8B"、"32B"等
             config: 自定义配置，如果为None则使用默认配置
             
         Returns:
             模型实例
         """
+        # 基于模型名称和大小创建具体模型
         if config is None:
-            if model_size in DEFAULT_MODEL_CONFIGS:
-                config = DEFAULT_MODEL_CONFIGS[model_size]
-            else:
-                raise ValueError(f"未知模型大小: {model_size}")
+            try:
+                config = get_model_config(model_name, model_size)
+            except ValueError as e:
+                raise ValueError(f"未找到模型配置: {model_name}-{model_size}") from e
         
-        return TransformerModel(
-            name=config.get("name", f"LLM-{model_size}"),
-            config=config
-        )
+        # 根据模型名称选择对应的模型类
+        model_name_lower = model_name.lower()
+        if "llama" in model_name_lower:
+            return LlamaModel(
+                name=config.get("name", f"Llama-{model_size}"),
+                config=config
+            )
+        elif "qwen" in model_name_lower:
+            return QwenModel(
+                name=config.get("name", f"Qwen-{model_size}"),
+                config=config
+            )
+        elif "baichuan" in model_name_lower:
+            return BaichuanModel(
+                name=config.get("name", f"Baichuan-{model_size}"),
+                config=config
+            )
+        else:
+            # 如果没有匹配的具体模型类，使用通用的TransformerModel
+            return TransformerModel(
+                name=config.get("name", f"{model_name}-{model_size}"),
+                config=config
+            )
     
     @staticmethod
     def create_cluster(cluster_config: Union[str, Dict[str, Any]]) -> Cluster:

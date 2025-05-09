@@ -4,7 +4,7 @@ LLM硬件性能模拟器（LLMHardwareEval）是一个用于模拟和评估大�
 
 ## 功能特点
 
-- 支持不同的LLM模型配置（如7B、13B、70B等）
+- 支持多种具体的LLM模型（如Llama3-8B、Qwen-32B等）
 - 支持多种硬件类型（GPU和CPU）和不同硬件规格
 - 支持多种模拟策略（Roofline、解析模型、经验数据等）
 - 支持灵活的负载模式（恒定、随机、分布式、现实场景等）
@@ -55,15 +55,8 @@ python main.py --config your_config.json
 ```json
 {
   "model": {
-    "size": "7B",
-    "custom_config": {
-      "hidden_size": 4096,
-      "num_layers": 32,
-      "num_heads": 32,
-      "intermediate_size": 16384,
-      "vocab_size": 32000,
-      "max_seq_length": 4096
-    }
+    "name": "llama3",
+    "size": "8B"
   },
   "clusters": {
     "gpu_cluster": "gpu_medium",
@@ -96,7 +89,7 @@ python main.py --config your_config.json
   },
   "output": {
     "save_results": true,
-    "output_dir": "my_results",
+    "output_dir": "llama3_results",
     "plot_charts": true
   }
 }
@@ -107,6 +100,23 @@ python main.py --config your_config.json
 ### 模型（Model）
 
 定义LLM模型的结构和参数，包括隐藏层大小、层数、注意力头数等。
+
+模型定义使用具体的模型架构和大小:
+```json
+{
+  "model": {
+    "name": "llama3",
+    "size": "8B"
+  }
+}
+```
+
+目前支持的模型架构：
+- Llama系列 (`llama3`)：8B, 70B
+- Qwen系列 (`qwen`)：7B, 32B
+- Baichuan系列 (`baichuan`)：7B, 13B
+
+每种模型架构都有其特定的参数配置和算子实现，准确地反映了实际模型的性能特征。
 
 ### 算子（Operator）
 
@@ -145,8 +155,9 @@ python main.py --config your_config.json
 
 ### 添加新的模型
 
-1. 继承`Model`基类
-2. 实现`_build_operators`方法
+1. 在`config/model_configs.py`中添加新模型的配置
+2. 在`models/`目录下创建新模型类，继承合适的基类
+3. 实现特定的`_build_operators`方法
 
 ### 添加新的算子
 

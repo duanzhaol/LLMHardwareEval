@@ -1,15 +1,7 @@
 {
   "model": {
-    "size": "7B",
-    "custom_config": {
-      "hidden_size": 4096,
-      "num_layers": 32,
-      "num_heads": 32,
-      "intermediate_size": 16384,
-      "vocab_size": 32000,
-      "max_seq_length": 4096,
-      "head_dim": 128
-    }
+    "name": "llama3",
+    "size": "7B"
   },
   "clusters": {
     "gpu_cluster": "gpu_medium",
