@@ -2,12 +2,12 @@ from models.base import Model
 from models.transformer import TransformerModel
 from models.llama import LlamaModel
 from models.qwen import QwenModel
-from models.baichuan import BaichuanModel
+from models.deepseek import DeepSeekV3Model
 
 __all__ = [
     "Model",
     "TransformerModel",
     "LlamaModel",
     "QwenModel",
-    "BaichuanModel"
+    "DeepSeekV3Model"
 ] 

@@ -77,12 +77,7 @@ class Model(ABC):
                 operation_type=self.config.get("operation_type", "fp16"),  # 只传递通用参数
                 parallelization_factor=self.config.get("parallelization_factor", 1.0)
             )
-            total_time += time
-        
-        # 考虑并行化，这里简化处理
-        parallelization_factor = self.config.get("parallelization_factor", 1.0)
-        if parallelization_factor > 1.0:
-            total_time /= parallelization_factor
+            total_time += time       
         
         return total_time
     

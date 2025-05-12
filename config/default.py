@@ -112,10 +112,8 @@ DEFAULT_STRATEGY_CONFIGS = {
     "roofline": {
         "name": "Roofline Model"
     },
-    "analytical": {
-        "name": "Analytical Model",
-        "hardware_efficiency": 0.7,
-        "overhead": 1e-5
+    "serial": {
+        "name": "Serial Model"
     }
 }
 

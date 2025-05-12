@@ -1,0 +1,79 @@
+{
+  "model": {
+    "name": "deepseek_v3",
+    "size": "7B",
+    "operation_type": "fp16",
+    "num_heads": 32,
+    "head_dim": 64,
+    "mixture_size": 4,
+    "matrix_fusion": true,
+    "num_layers": 32,
+    "vocabulary_size": 100000
+  },
+  "hardware": {
+    "gpu": {
+      "name": "H100",
+      "specs": {
+        "fp16_tflops": 989,
+        "fp32_tflops": 494,
+        "bf16_tflops": 989,
+        "fp8_tflops": 1979,
+        "int8_tops": 1979,
+        "memory_bandwidth": 3350,
+        "vram_gb": 80,
+        "interconnect_bandwidth": 900
+      },
+      "cost_per_hour": 4.0
+    }
+  },
+  "mla_comparison": {
+    "workload": {
+      "type": "constant",
+      "batch_size": 32,
+      "input_length": 1024,
+      "output_length": 128
+    },
+    "comparison": [
+      {
+        "name": "DeepSeek V3 MLA",
+        "model": "deepseek_v3",
+        "attention_type": "mla",
+        "description": "使用Mixture of Linear Attention，无需Softmax，支持流式累加"
+      },
+      {
+        "name": "Llama 3 GQA",
+        "model": "llama",
+        "attention_type": "gqa",
+        "description": "使用传统Grouped Query Attention注意力机制"
+      }
+    ]
+  },
+  "matrix_fusion_comparison": {
+    "workload": {
+      "type": "constant",
+      "batch_size": 32,
+      "input_length": 1024,
+      "output_length": 128
+    },
+    "comparison": [
+      {
+        "name": "有矩阵吸收",
+        "matrix_fusion": true,
+        "description": "启用矩阵吸收优化，减少内存访问"
+      },
+      {
+        "name": "无矩阵吸收",
+        "matrix_fusion": false,
+        "description": "不使用矩阵吸收优化"
+      }
+    ]
+  },
+  "strategies": {
+    "roofline": null
+  },
+  "output": {
+    "save_results": true,
+    "output_dir": "results/deepseek_v3",
+    "plot_charts": true
+  }
+} 

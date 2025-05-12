@@ -1,9 +1,16 @@
 from typing import Dict, Any, List
 from models.base import Model
-from operators.transformer import MatMulOperator, AttentionOperator, FFNOperator, LayerNormOperator
+from operators.transformer import (
+    MatMulOperator,
+    MultiHeadAttentionOperator,
+    GroupedQueryAttentionOperator,
+    MultiQueryAttentionOperator,
+    FFNOperator,
+    LayerNormOperator
+)
 
 class TransformerModel(Model):
-    """Transformer模型类"""
+    """Transformer模型基类"""
     
     def __init__(self, name: str, config: Dict[str, Any]):
         """
@@ -11,110 +18,43 @@ class TransformerModel(Model):
         
         Args:
             name: 模型名称
-            config: 模型配置，应包含如下参数：
-                - hidden_size: 隐藏层大小
-                - num_layers: 层数
-                - num_heads: 注意力头数
-                - intermediate_size: 前馈网络中间层大小
-                - vocab_size: 词表大小
-                - max_seq_length: 最大序列长度
-                - head_dim: 每个注意力头的维度（默认为hidden_size/num_heads）
+            config: 模型配置
         """
-        # 验证必要参数
-        required_params = ["hidden_size", "num_layers", "num_heads", "intermediate_size", "vocab_size"]
-        for param in required_params:
-            if param not in config:
-                raise ValueError(f"Transformer模型配置必须包含参数：{param}")
-        
-        # 设置默认值
-        if "head_dim" not in config:
-            config["head_dim"] = config["hidden_size"] // config["num_heads"]
-        
         super().__init__(name, config)
+        self.operators = self._build_operators()
     
     def _build_operators(self) -> List:
         """
-        根据模型配置构建算子列表
+        构建模型的算子列表
         
         Returns:
             模型中的算子列表
         """
-        operators = []
-        
-        # 模型配置参数
-        hidden_size = self.config["hidden_size"]
-        num_layers = self.config["num_layers"]
-        num_heads = self.config["num_heads"]
-        head_dim = self.config["head_dim"]
-        intermediate_size = self.config["intermediate_size"]
-        vocab_size = self.config["vocab_size"]
-        
-        # 词嵌入
-        operators.append(MatMulOperator(
-            name="MatMul",
-            dimensions={"input_size": 1, "output_size": hidden_size}
-        ))
-        
-        # Transformer层
-        for i in range(num_layers):
-            # 自注意力前的LayerNorm
-            operators.append(LayerNormOperator(
-                name="LayerNorm",
-                dimensions={"hidden_size": hidden_size}
-            ))
-            
-            # 自注意力中的Q, K, V投影
-            operators.append(MatMulOperator(
-                name="MatMul",
-                dimensions={"input_size": hidden_size, "output_size": hidden_size}
-            ))
-            operators.append(MatMulOperator(
-                name="MatMul",
-                dimensions={"input_size": hidden_size, "output_size": hidden_size}
-            ))
-            operators.append(MatMulOperator(
-                name="MatMul",
-                dimensions={"input_size": hidden_size, "output_size": hidden_size}
-            ))
-            
-            # 自注意力计算
-            operators.append(AttentionOperator(
-                name="Attention",
-                dimensions={"num_heads": num_heads, "head_dim": head_dim}
-            ))
-            
-            # 自注意力输出投影
-            operators.append(MatMulOperator(
-                name="MatMul",
-                dimensions={"input_size": hidden_size, "output_size": hidden_size}
-            ))
-            
-            # FFN前的LayerNorm
-            operators.append(LayerNormOperator(
-                name="LayerNorm",
-                dimensions={"hidden_size": hidden_size}
-            ))
-            
-            # 前馈神经网络
-            operators.append(FFNOperator(
-                name="FFN",
-                dimensions={"hidden_size": hidden_size, "intermediate_size": intermediate_size}
-            ))
-        
-        # 最后的LayerNorm
-        operators.append(LayerNormOperator(
-            name="LayerNorm",
-            dimensions={"hidden_size": hidden_size}
-        ))
-        
-        # 输出层
-        operators.append(MatMulOperator(
-            name="MatMul",
-            dimensions={"input_size": hidden_size, "output_size": vocab_size}
-        ))
-        
-        return operators
+        raise NotImplementedError("Subclasses must implement _build_operators")
     
+    def estimate_execution_time(self, batch_size: int, seq_length: int, **kwargs) -> float:
+        """
+        估计模型执行时间
+        
+        Args:
+            batch_size: 批处理大小
+            seq_length: 序列长度
+            kwargs: 其他参数
+            
+        Returns:
+            执行时间（秒）
+        """
+        total_time = 0.0
+        for operator in self.operators:
+            total_time += operator.compute_time(
+                hardware=self.hardware,
+                strategy=self.strategy,
+                batch_size=batch_size,
+                seq_length=seq_length,
+                **kwargs
+            )
+        return total_time
+
     def prefill_operators(self) -> List:
         """
         获取预填充（prefill）阶段使用的算子列表

@@ -98,10 +98,8 @@ class LLMHardwareEval:
                 user_config = json.load(f)
                 # 合并用户配置和默认配置
                 for key, value in user_config.items():
-                    if key in default_config and isinstance(default_config[key], dict):
-                        default_config[key].update(value)
-                    else:
-                        default_config[key] = value
+                    # 直接替换默认配置中对应的部分
+                    default_config[key] = value
         
         return default_config
     
@@ -134,6 +132,7 @@ class LLMHardwareEval:
         # 为每个请求分配资源并计算性能
         for i, request in enumerate(requests):
             # 分配资源
+            # 很可能不需要这步，先假设请求能完全放下？
             allocated_hardware = cluster.allocate_resources(
                 self.model,
                 request["batch_size"],

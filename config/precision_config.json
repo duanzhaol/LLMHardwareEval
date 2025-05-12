@@ -1,0 +1,80 @@
+{
+  "model": {
+    "name": "llama3",
+    "size": "8B",
+    "operation_type": "fp16"
+  },
+  "hardware": {
+    "gpu": {
+      "name": "A100",
+      "specs": {
+        "fp16_tflops": 312,
+        "fp32_tflops": 156,
+        "bf16_tflops": 312,
+        "fp8_tflops": 624,
+        "int8_tops": 624,
+        "memory_bandwidth": 1935,
+        "vram_gb": 80,
+        "interconnect_bandwidth": 300
+      },
+      "cost_per_hour": 3.0
+    },
+    "cpu": {
+      "name": "Intel Xeon",
+      "specs": {
+        "cores": 64,
+        "frequency_ghz": 3.0,
+        "memory_bandwidth": 200,
+        "ram_gb": 512,
+        "network_bandwidth": 100,
+        "bf16_support": true,
+        "avx512_support": true,
+        "amx_support": true
+      },
+      "cost_per_hour": 1.5
+    }
+  },
+  "precision_comparison": {
+    "workload": {
+      "type": "constant",
+      "batch_size": 32,
+      "input_length": 128,
+      "output_length": 32
+    },
+    "precision_types": [
+      {
+        "name": "FP32",
+        "operation_type": "fp32",
+        "description": "32位浮点精度，最高精度但计算速度最慢"
+      },
+      {
+        "name": "FP16",
+        "operation_type": "fp16",
+        "description": "16位浮点精度，在精度和速度之间取得平衡"
+      },
+      {
+        "name": "BF16",
+        "operation_type": "bf16",
+        "description": "16位脑浮点精度，相比FP16有更大的指数范围，更适合大模型训练"
+      },
+      {
+        "name": "INT8",
+        "operation_type": "int8",
+        "description": "8位整数精度，更快的计算和更小的内存占用，但精度较低"
+      },
+      {
+        "name": "FP8",
+        "operation_type": "fp8",
+        "description": "8位浮点精度，精度和速度的平衡，适合推理场景"
+      }
+    ]
+  },
+  "strategies": {
+    "roofline": null
+  },
+  "output": {
+    "save_results": true,
+    "output_dir": "results/precision_comparison",
+    "plot_charts": true
+  }
+} 

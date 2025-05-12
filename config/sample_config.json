@@ -1,18 +1,14 @@
 {
   "model": {
     "name": "llama3",
-    "size": "7B"
+    "size": "8B"
   },
   "clusters": {
     "gpu_cluster": "gpu_medium",
     "cpu_cluster": "cpu_small"
   },
   "strategies": {
-    "roofline": null,
-    "analytical": {
-      "hardware_efficiency": 0.6,
-      "overhead": 0.00002
-    }
+    "roofline": null
   },
   "workloads": {
     "light_load": {

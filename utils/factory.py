@@ -8,14 +8,13 @@ from models.base import Model
 from models.transformer import TransformerModel
 from models.llama import LlamaModel
 from models.qwen import QwenModel
-from models.baichuan import BaichuanModel
 
 from cluster.base import Cluster
 from cluster.gpu import GPUCluster
 from cluster.cpu import CPUCluster
 
 from simulation.base import SimulationStrategy
-from simulation.strategies import RooflineStrategy, AnalyticalStrategy, EmpiricalStrategy
+from simulation.strategies import RooflineStrategy, SerialStrategy
 
 from workloads.base import Workload
 from workloads.realistic import ConstantWorkload, RandomWorkload, DistributionWorkload, RealisticWorkload
@@ -176,7 +175,7 @@ class Factory:
         创建模拟策略实例
         
         Args:
-            strategy_type: 策略类型，如"roofline"、"analytical"等
+            strategy_type: 策略类型，如"roofline"、"serial"等
             config: 自定义配置，如果为None则使用默认配置
             
         Returns:
@@ -191,13 +190,8 @@ class Factory:
         if strategy_type.lower() == "roofline":
             return RooflineStrategy(params=config)
             
-        elif strategy_type.lower() == "analytical":
-            return AnalyticalStrategy(params=config)
-            
-        elif strategy_type.lower() == "empirical":
-            if "benchmark_data" not in config:
-                raise ValueError("Empirical策略必须提供benchmark_data参数")
-            return EmpiricalStrategy(benchmark_data=config["benchmark_data"], params=config)
+        elif strategy_type.lower() == "serial":
+            return SerialStrategy(params=config)
             
         else:
             raise ValueError(f"不支持的模拟策略类型: {strategy_type}")
